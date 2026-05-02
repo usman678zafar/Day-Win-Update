@@ -3,6 +3,9 @@ export const ui = {
   page: "mx-auto w-full min-w-0 max-w-6xl px-2.5 pt-4 min-[400px]:px-3 sm:px-6 sm:pt-8 lg:px-8 lg:pt-10 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-12",
   pageNarrow:
     "mx-auto w-full min-w-0 max-w-lg px-2.5 py-5 min-[400px]:px-3 sm:px-6 sm:py-10 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]",
+  /** Home hero + reflection — room for Arabic lines */
+  pageHome:
+    "mx-auto w-full min-w-0 max-w-xl px-2.5 py-5 min-[400px]:px-3 sm:px-6 sm:py-10 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]",
   card: "rounded-xl border border-zinc-200/90 bg-white p-3 shadow-sm shadow-zinc-950/[0.04] sm:rounded-2xl sm:p-6",
   cardMuted:
     "rounded-xl border border-zinc-200/60 bg-zinc-50/80 p-3 sm:rounded-2xl sm:p-6",
