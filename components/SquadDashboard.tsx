@@ -78,6 +78,8 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   const [adminEnd, setAdminEnd] = useState("");
   const [addMemberEmail, setAddMemberEmail] = useState("");
   const [membersModalOpen, setMembersModalOpen] = useState(false);
+  const [squadHabitsPanelOpen, setSquadHabitsPanelOpen] = useState(false);
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
   const [viewerTz, setViewerTz] = useState("UTC");
 
   useEffect(() => {
@@ -449,9 +451,23 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
 
       {squad.role === "admin" ? (
         <section className={ui.card}>
-          <h2 className={ui.sectionTitle}>Squad habits</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+            <h2 className={`${ui.sectionTitle} mb-0`}>Squad habits</h2>
+            <button
+              type="button"
+              className={`${ui.btnSecondary} shrink-0 px-3 py-1.5 text-xs sm:text-sm`}
+              aria-expanded={squadHabitsPanelOpen}
+              aria-controls="squad-habits-panel"
+              id="squad-habits-toggle"
+              onClick={() => setSquadHabitsPanelOpen((v) => !v)}
+            >
+              {squadHabitsPanelOpen ? "Hide" : "Show"}
+            </button>
+          </div>
+          {squadHabitsPanelOpen ? (
+            <div id="squad-habits-panel" className="mt-3 space-y-3 sm:mt-4">
           <form
-            className="mt-3 flex flex-col gap-2.5 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3"
+            className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3"
             onSubmit={onAddHabit}
           >
             <div className="min-w-0 w-full flex-1 sm:min-w-[12rem] sm:max-w-md">
@@ -503,14 +519,34 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
               })()}
             </ul>
           ) : null}
+            </div>
+          ) : (
+            <p className={`${ui.muted} mt-2 max-w-prose sm:mt-1`}>
+              Expand to add habits for the squad or remove existing ones.
+            </p>
+          )}
         </section>
       ) : null}
 
       {squad.role === "admin" ? (
         <section className="rounded-xl border border-amber-200/80 bg-amber-50/35 p-3 sm:rounded-2xl sm:p-6 dark:border-white/10 dark:bg-[#262626]">
-          <h2 className={ui.sectionTitle}>Admin</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+            <h2 className={`${ui.sectionTitle} mb-0`}>Admin</h2>
+            <button
+              type="button"
+              className={`${ui.btnSecondary} shrink-0 px-3 py-1.5 text-xs sm:text-sm`}
+              aria-expanded={adminPanelOpen}
+              aria-controls="admin-settings-panel"
+              id="admin-panel-toggle"
+              onClick={() => setAdminPanelOpen((v) => !v)}
+            >
+              {adminPanelOpen ? "Hide" : "Show"}
+            </button>
+          </div>
+          {adminPanelOpen ? (
+            <div id="admin-settings-panel" className="mt-3 sm:mt-4">
           <form
-            className="mt-3 flex flex-col gap-2.5 border-b border-amber-200/60 pb-4 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3 sm:pb-5 dark:border-white/10"
+            className="flex flex-col gap-2.5 border-b border-amber-200/60 pb-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3 sm:pb-5 dark:border-white/10"
             onSubmit={onAddMember}
           >
             <div className="min-w-0 w-full flex-1 sm:min-w-[14rem] sm:max-w-md">
@@ -575,6 +611,12 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
           >
             Delete squad
           </button>
+            </div>
+          ) : (
+            <p className={`${ui.muted} mt-2 max-w-prose sm:mt-1`}>
+              Expand for invites, squad dates, save, or delete squad.
+            </p>
+          )}
         </section>
       ) : null}
     </div>

@@ -45,7 +45,7 @@ export function SquadMemberAvatarStack({
           {shown.map((m, i) => (
             <div
               key={m.userId}
-              className="relative z-10 ring-1 ring-white/90 first:ms-0 dark:ring-white/10"
+              className="relative z-10 first:ms-0"
               style={{ zIndex: shown.length - i }}
             >
               {m.image ? (

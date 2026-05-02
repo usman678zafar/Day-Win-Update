@@ -91,7 +91,7 @@ export function TrackerGrid({
             </h3>
             {/* Edge-to-edge scroll on narrow screens; card padding handled by parent */}
             <div
-              className="-mx-0.5 overflow-x-auto overscroll-x-contain rounded-lg border border-zinc-200/90 bg-white [scrollbar-gutter:stable] sm:mx-0 sm:rounded-xl touch-pan-x dark:border-white/10 dark:bg-[#262626]"
+              className="-mx-0.5 overflow-x-auto overscroll-x-contain rounded-lg border border-zinc-200/90 bg-white [scrollbar-gutter:stable] scrollbar-custom sm:mx-0 sm:rounded-xl touch-pan-x dark:border-white/10 dark:bg-[#262626]"
               style={{ WebkitOverflowScrolling: "touch" }}
             >
               <table className="min-w-max border-collapse text-xs sm:text-sm">
