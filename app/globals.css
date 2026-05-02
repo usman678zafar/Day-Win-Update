@@ -8,9 +8,9 @@
 }
 
 .dark {
-  /* Uniform soft charcoal — single canvas, no tint */
-  --day-win-canvas: #262626;
-  --background: #262626;
+  /* Even deeper dark theme */
+  --day-win-canvas: #0f0f0f;
+  --background: #0f0f0f;
   --foreground: #d4d4d4;
 }
 
