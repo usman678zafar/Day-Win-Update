@@ -120,10 +120,12 @@ export function TrackerGrid({
                           ? future
                             ? "Future day — view only until the date arrives"
                             : ""
-                          : `${h.userName}'s progress — view only; edit your table only`;
+                          : future
+                            ? "Future day — view only"
+                            : `${h.userName}'s progress — view only; edit your table only`;
                         const readOnlySymbol = done
                           ? "✅"
-                          : own && future
+                          : future
                             ? "❌"
                             : "—";
 
