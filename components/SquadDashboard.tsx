@@ -66,6 +66,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   const [adminName, setAdminName] = useState("");
   const [adminStart, setAdminStart] = useState("");
   const [adminEnd, setAdminEnd] = useState("");
+  const [addMemberEmail, setAddMemberEmail] = useState("");
   const [viewerTz, setViewerTz] = useState("UTC");
 
   useEffect(() => {
@@ -246,6 +247,33 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
     await loadSquad();
   };
 
+  const onAddMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      !squad ||
+      squad.joined !== true ||
+      squad.role !== "admin"
+    ) {
+      return;
+    }
+    const email = addMemberEmail.trim();
+    if (!email) return;
+    setLoadError(null);
+    const res = await fetch(`/api/squads/${squadId}/members`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setLoadError(data.error ?? "Could not add member");
+      return;
+    }
+    setAddMemberEmail("");
+    await loadSquad();
+    await loadTracker();
+  };
+
   const onLeave = async () => {
     if (!confirm("Leave this squad?")) return;
     const me = tracker?.currentUserId;
@@ -402,6 +430,36 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
 
       <section className="space-y-2 border-t border-zinc-200 pt-4">
         <h2 className="text-sm font-medium text-zinc-800">Membership</h2>
+        {squad.role === "admin" ? (
+          <form
+            className="flex flex-wrap items-end gap-2 border-b border-zinc-100 pb-3"
+            onSubmit={onAddMember}
+          >
+            <div>
+              <label
+                htmlFor="add-member-email"
+                className="block text-xs text-zinc-600"
+              >
+                Add member (Google email)
+              </label>
+              <input
+                id="add-member-email"
+                type="email"
+                autoComplete="email"
+                className="mt-0.5 rounded border border-zinc-300 px-2 py-1 text-sm min-w-[14rem]"
+                value={addMemberEmail}
+                onChange={(e) => setAddMemberEmail(e.target.value)}
+                placeholder="friend@example.com"
+              />
+            </div>
+            <button
+              type="submit"
+              className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
+            >
+              Add
+            </button>
+          </form>
+        ) : null}
         <ul className="text-sm space-y-1">
           {squad.members.map((m) => (
             <li
