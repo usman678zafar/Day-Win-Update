@@ -30,6 +30,17 @@ const authConfig: NextAuthConfig = {
       }
       return session;
     },
+    async signIn() {
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      // If the url is relative, convert it to absolute
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // If the url is for the same site, allow it
+      else if (new URL(url).origin === baseUrl) return url;
+      // Default to /squads after login
+      return `${baseUrl}/squads`;
+    },
   },
 };
 
