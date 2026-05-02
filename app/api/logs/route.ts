@@ -1,14 +1,24 @@
 import { auth } from "@/auth";
 import { ensureHabitLogStorageReady } from "@/lib/db";
-import { dateKeyInRange } from "@/lib/dates";
+import { isFutureDateKey, squadAllowsDateKey } from "@/lib/dates";
 import { getSquadWithMembership } from "@/lib/squad-access";
 import Habit from "@/models/Habit";
 import HabitLog from "@/models/HabitLog";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 async function getSessionUserId() {
   const session = await auth();
   return session?.user?.id ?? null;
+}
+
+function timeZoneHeader(req: Request): string | null {
+  const raw = req.headers.get("x-day-win-tz")?.trim();
+  if (!raw || raw.length > 120) {
+    return null;
+  }
+  return raw;
 }
 
 export async function POST(req: Request) {
@@ -48,9 +58,25 @@ export async function POST(req: Request) {
   if (!squad || !role) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  if (!dateKeyInRange(dateKey, squad.startDate, squad.endDate)) {
+  const tz = timeZoneHeader(req);
+  const start =
+    squad.startDate instanceof Date
+      ? squad.startDate
+      : new Date(squad.startDate as string);
+  const end =
+    squad.endDate instanceof Date
+      ? squad.endDate
+      : new Date(squad.endDate as string);
+  if (!squadAllowsDateKey(dateKey, start, end, tz)) {
     return NextResponse.json(
       { error: "dateKey outside squad range" },
+      { status: 400 },
+    );
+  }
+
+  if (isFutureDateKey(dateKey, tz)) {
+    return NextResponse.json(
+      { error: "Cannot log habits for future dates" },
       { status: 400 },
     );
   }

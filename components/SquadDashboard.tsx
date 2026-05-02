@@ -66,6 +66,15 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   const [adminName, setAdminName] = useState("");
   const [adminStart, setAdminStart] = useState("");
   const [adminEnd, setAdminEnd] = useState("");
+  const [viewerTz, setViewerTz] = useState("UTC");
+
+  useEffect(() => {
+    try {
+      setViewerTz(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    } catch {
+      setViewerTz("UTC");
+    }
+  }, []);
 
   const loadSquad = useCallback(async () => {
     setLoadError(null);
@@ -85,7 +94,10 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   }, [squadId]);
 
   const loadTracker = useCallback(async () => {
-    const res = await fetch(`/api/squads/${squadId}/tracker`);
+    const qs = new URLSearchParams({ tz: viewerTz });
+    const res = await fetch(`/api/squads/${squadId}/tracker?${qs}`, {
+      cache: "no-store",
+    });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       setLoadError(data.error ?? "Failed to load tracker");
@@ -94,7 +106,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
     }
     setTracker(data);
     setLogKeySet(logsToSet(data.logs ?? []));
-  }, [squadId]);
+  }, [squadId, viewerTz]);
 
   useEffect(() => {
     void loadSquad();
@@ -106,7 +118,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
     } else {
       setTracker(null);
     }
-  }, [squad, loadTracker]);
+  }, [squad, loadTracker, viewerTz]);
 
   const onToggle = useCallback(
     async (habitId: string, dateKey: string, completed: boolean) => {
@@ -114,7 +126,10 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
       setBusyKey(key);
       const res = await fetch("/api/logs", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-day-win-tz": viewerTz,
+        },
         body: JSON.stringify({ habitId, dateKey, completed }),
       });
       setBusyKey(null);
@@ -133,7 +148,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
         return next;
       });
     },
-    [],
+    [viewerTz],
   );
 
   const onJoin = async () => {
@@ -334,6 +349,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
             habits={tracker.habits}
             logKeySet={logKeySet}
             currentUserId={tracker.currentUserId}
+            columnTimeZone={viewerTz}
             onToggle={(hid, dk, done) => void onToggle(hid, dk, done)}
             busyKey={busyKey}
           />

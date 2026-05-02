@@ -1,5 +1,5 @@
 import { ensureHabitLogStorageReady } from "@/lib/db";
-import { eachDateKeyInRange } from "@/lib/dates";
+import { eachSquadDayKeys } from "@/lib/dates";
 import Habit from "@/models/Habit";
 import HabitLog from "@/models/HabitLog";
 import { Types } from "mongoose";
@@ -30,8 +30,18 @@ export async function buildTrackerPayload(
   squadId: string,
   userId: string,
   squad: { startDate: Date; endDate: Date },
+  timeZone?: string | null,
 ): Promise<TrackerPayload> {
   await ensureHabitLogStorageReady();
+  const start =
+    squad.startDate instanceof Date
+      ? squad.startDate
+      : new Date(squad.startDate as string);
+  const end =
+    squad.endDate instanceof Date
+      ? squad.endDate
+      : new Date(squad.endDate as string);
+
   const habits = await Habit.find({ squad: squadId })
     .populate("user", "name email")
     .sort({ createdAt: 1 })
@@ -66,7 +76,7 @@ export async function buildTrackerPayload(
     completed: l.completed,
   }));
 
-  const days = eachDateKeyInRange(squad.startDate, squad.endDate);
+  const days = eachSquadDayKeys(start, end, timeZone);
 
   return {
     squadId,

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatColumnHeader } from "@/lib/dates";
+import { formatColumnHeader, isFutureDateKey } from "@/lib/dates";
 
 export type TrackerHabitRow = {
   id: string;
@@ -14,6 +14,8 @@ type Props = {
   habits: TrackerHabitRow[];
   logKeySet: Set<string>;
   currentUserId: string;
+  /** IANA zone for column headers + must match log API `x-day-win-tz`. */
+  columnTimeZone?: string | null;
   onToggle: (habitId: string, dateKey: string, completed: boolean) => void;
   busyKey?: string | null;
 };
@@ -27,6 +29,7 @@ export function TrackerGrid({
   habits,
   logKeySet,
   currentUserId,
+  columnTimeZone,
   onToggle,
   busyKey,
 }: Props) {
@@ -54,7 +57,7 @@ export function TrackerGrid({
                 key={d}
                 className="border border-zinc-300 px-2 py-1 text-center text-xs font-medium whitespace-nowrap"
               >
-                {formatColumnHeader(d)}
+                {formatColumnHeader(d, columnTimeZone)}
               </th>
             ))}
           </tr>
@@ -69,9 +72,12 @@ export function TrackerGrid({
                 const done = logKeySet.has(key);
                 const own = h.userId === currentUserId;
                 const busy = busyKey === key;
+                const future = isFutureDateKey(d, columnTimeZone);
+                const editable = own && !future;
+
                 return (
                   <td key={d} className="border border-zinc-300 px-1 py-1 text-center">
-                    {own ? (
+                    {editable ? (
                       <button
                         type="button"
                         disabled={!!busy}
