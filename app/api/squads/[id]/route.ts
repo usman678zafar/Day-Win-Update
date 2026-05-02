@@ -23,6 +23,7 @@ type PopulatedMember = {
     _id: Types.ObjectId;
     name?: string;
     email?: string;
+    image?: string;
   };
   role: string;
 };
@@ -76,6 +77,7 @@ export async function GET(_req: Request, ctx: Ctx) {
           name: u.name ?? u.email ?? "Member",
           email: u.email ?? "",
           role: m.role,
+          image: typeof u.image === "string" && u.image ? u.image : null,
         };
       }),
     },

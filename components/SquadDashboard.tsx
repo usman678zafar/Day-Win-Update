@@ -7,6 +7,10 @@ import {
   SquadDashboardPageSkeleton,
   TrackerTablesSkeleton,
 } from "@/components/SquadDashboardSkeleton";
+import {
+  SquadMemberAvatarStack,
+  SquadMembersModal,
+} from "@/components/SquadMembersAvatarModal";
 import { ui } from "@/lib/ui";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -16,6 +20,7 @@ type SquadMember = {
   name: string;
   email: string;
   role: string;
+  image: string | null;
 };
 
 type SquadApiJoined = {
@@ -72,6 +77,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   const [adminStart, setAdminStart] = useState("");
   const [adminEnd, setAdminEnd] = useState("");
   const [addMemberEmail, setAddMemberEmail] = useState("");
+  const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [viewerTz, setViewerTz] = useState("UTC");
 
   useEffect(() => {
@@ -91,7 +97,14 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
       setSquad(null);
       return;
     }
-    setSquad(data.squad as SquadState);
+    const s = data.squad as SquadState;
+    if (s.joined) {
+      s.members = s.members.map((m) => ({
+        ...m,
+        image: m.image ?? null,
+      }));
+    }
+    setSquad(s);
     if (data.squad.joined) {
       setAdminName(data.squad.name);
       setAdminStart(data.squad.startDateKey ?? "");
@@ -359,7 +372,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   return (
     <div className="min-w-0 space-y-4 sm:space-y-8">
       <header className={ui.card}>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div className="min-w-0 flex-1">
             <h1 className={ui.headingPage}>{squad.name}</h1>
             <p
@@ -380,14 +393,30 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
               </span>
             </p>
           </div>
-          <Link
-            href="/squads"
-            className={`${ui.btnSecondary} w-full shrink-0 sm:w-auto`}
-          >
-            All squads
-          </Link>
+          <SquadMemberAvatarStack
+            members={squad.members}
+            onOpen={() => setMembersModalOpen(true)}
+          />
         </div>
       </header>
+
+      <SquadMembersModal
+        open={membersModalOpen}
+        onClose={() => setMembersModalOpen(false)}
+        squadName={squad.name}
+        members={squad.members}
+        canManageMembers={squad.role === "admin"}
+        currentUserId={tracker?.currentUserId}
+        onRemoveMember={
+          squad.role === "admin" ? (uid) => void onRemoveMember(uid) : undefined
+        }
+        onSetRole={
+          squad.role === "admin"
+            ? (uid, role) => void onSetRole(uid, role)
+            : undefined
+        }
+        onLeaveSquad={() => void onLeave()}
+      />
 
       {loadError ? <p className={ui.errorBox}>{loadError}</p> : null}
 
@@ -477,16 +506,16 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
         </section>
       ) : null}
 
-      <section className={ui.card}>
-        <h2 className={ui.sectionTitle}>Membership</h2>
-        {squad.role === "admin" ? (
+      {squad.role === "admin" ? (
+        <section className="rounded-xl border border-amber-200/80 bg-amber-50/35 p-3 shadow-sm sm:rounded-2xl sm:p-6">
+          <h2 className={ui.sectionTitle}>Admin</h2>
           <form
-            className="mt-3 flex flex-col gap-2.5 border-b border-zinc-100 pb-3 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3 sm:pb-4"
+            className="mt-3 flex flex-col gap-2.5 border-b border-amber-200/60 pb-4 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3 sm:pb-5"
             onSubmit={onAddMember}
           >
             <div className="min-w-0 w-full flex-1 sm:min-w-[14rem] sm:max-w-md">
               <label htmlFor="add-member-email" className={ui.sectionTitle}>
-                Add member (Google email)
+                Invite member (Google email)
               </label>
               <input
                 id="add-member-email"
@@ -502,59 +531,10 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
               type="submit"
               className={`${ui.btnPrimary} w-full shrink-0 sm:w-auto`}
             >
-              Add member
+              Send invite
             </button>
           </form>
-        ) : null}
-        <ul className="mt-3 space-y-1.5 sm:mt-4 sm:space-y-2">
-          {squad.members.map((m) => (
-            <li
-              key={m.userId}
-              className="flex flex-col gap-1.5 rounded-lg border border-zinc-100 bg-white px-2.5 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-3 sm:py-2.5"
-            >
-              <span className="min-w-0 text-sm text-zinc-800">
-                <span className="font-medium">{m.name}</span>{" "}
-                <span className="text-zinc-500">({m.role})</span>
-              </span>
-              {squad.role === "admin" && m.userId !== tracker?.currentUserId ? (
-                <div className="flex flex-wrap gap-2 sm:shrink-0 sm:justify-end">
-                  <button
-                    type="button"
-                    className={`${ui.btnGhost} text-xs`}
-                    onClick={() =>
-                      void onSetRole(
-                        m.userId,
-                        m.role === "admin" ? "member" : "admin",
-                      )
-                    }
-                  >
-                    Make {m.role === "admin" ? "member" : "admin"}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${ui.btnGhost} text-xs text-red-700 hover:bg-red-50`}
-                    onClick={() => void onRemoveMember(m.userId)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-        <button
-          type="button"
-          className={`${ui.btnSecondary} mt-4 w-full sm:w-auto`}
-          onClick={() => void onLeave()}
-        >
-          Leave squad
-        </button>
-      </section>
-
-      {squad.role === "admin" ? (
-        <section className="rounded-xl border border-amber-200/80 bg-amber-50/35 p-3 shadow-sm sm:rounded-2xl sm:p-6">
-          <h2 className={ui.sectionTitle}>Admin</h2>
-          <form className="mt-3 grid max-w-md gap-2.5 sm:mt-4 sm:gap-3" onSubmit={onSaveAdmin}>
+          <form className="mt-4 grid max-w-md gap-2.5 sm:mt-5 sm:gap-3" onSubmit={onSaveAdmin}>
             <label className="block">
               <span className={ui.sectionTitle}>Squad name</span>
               <input
