@@ -26,6 +26,6 @@ export async function GET(req: Request, ctx: Ctx) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const tz = new URL(req.url).searchParams.get("tz")?.trim() || null;
-  const payload = await buildTrackerPayload(squadId, userId, squad, tz);
+  const payload = await buildTrackerPayload(squadId, userId, tz);
   return NextResponse.json(payload);
 }

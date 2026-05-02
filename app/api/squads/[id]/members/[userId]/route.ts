@@ -15,6 +15,19 @@ type Ctx = { params: Promise<{ id: string; userId: string }> };
 
 type SquadMemberLean = { user: { toString: () => string }; role: string };
 
+async function deleteTrackerLogsForMember(
+  squadId: string,
+  memberUserId: string,
+) {
+  const habits = await Habit.find({ squad: squadId }).select("_id").lean();
+  const habitIds = habits.map((h) => h._id);
+  if (habitIds.length === 0) return;
+  await HabitLog.deleteMany({
+    user: memberUserId,
+    habit: { $in: habitIds },
+  });
+}
+
 export async function PATCH(req: Request, ctx: Ctx) {
   const currentId = await getSessionUserId();
   if (!currentId) {
@@ -89,6 +102,8 @@ export async function DELETE(_req: Request, ctx: Ctx) {
       }
     }
     await ensureHabitLogStorageReady();
+    await connectDB();
+    await deleteTrackerLogsForMember(id, targetUserId);
     await Squad.findByIdAndUpdate(id, {
       $pull: { members: { user: targetUserId } },
     });
@@ -125,6 +140,8 @@ export async function DELETE(_req: Request, ctx: Ctx) {
     }
   }
   await ensureHabitLogStorageReady();
+  await connectDB();
+  await deleteTrackerLogsForMember(id, targetUserId);
   await Squad.findByIdAndUpdate(id, {
     $pull: { members: { user: targetUserId } },
   });

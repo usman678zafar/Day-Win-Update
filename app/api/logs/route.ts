@@ -51,9 +51,6 @@ export async function POST(req: Request) {
   if (!habit) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (String(habit.user) !== userId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
   const { squad, role } = await getSquadWithMembership(String(habit.squad), userId);
   if (!squad || !role) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -82,19 +79,17 @@ export async function POST(req: Request) {
   }
 
   if (!completed) {
-    await HabitLog.deleteOne({ habit: habitId, dateKey });
+    await HabitLog.deleteOne({ habit: habitId, user: userId, dateKey });
     return NextResponse.json({ ok: true, completed: false });
   }
 
   await HabitLog.findOneAndUpdate(
-    { habit: habitId, dateKey },
+    { habit: habitId, user: userId, dateKey },
     {
-      $set: {
-        completed: true,
-        user: userId,
-      },
+      $set: { completed: true },
       $setOnInsert: {
         habit: habitId,
+        user: userId,
         dateKey,
       },
     },

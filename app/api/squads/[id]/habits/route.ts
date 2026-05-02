@@ -27,12 +27,12 @@ export async function GET(_req: Request, ctx: Ctx) {
   }
   await connectDB();
   const habits = await Habit.find({ squad: squadId })
-    .populate("user", "name email")
+    .populate("createdBy", "name email")
     .sort({ createdAt: 1 })
     .lean();
 
   const payload = habits.map((h) => {
-    const u = h.user as {
+    const creator = h.createdBy as unknown as {
       _id: Types.ObjectId;
       name?: string;
       email?: string;
@@ -40,8 +40,8 @@ export async function GET(_req: Request, ctx: Ctx) {
     return {
       id: String(h._id),
       title: h.title,
-      userId: String(u._id),
-      userName: u.name ?? u.email ?? "Member",
+      createdBy: String(creator?._id ?? h.createdBy),
+      createdByName: creator?.name ?? creator?.email ?? "Admin",
     };
   });
 
@@ -58,8 +58,11 @@ export async function POST(req: Request, ctx: Ctx) {
   if (!squad) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (!role) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (role !== "admin") {
+    return NextResponse.json(
+      { error: "Only admins can add squad habits" },
+      { status: 403 },
+    );
   }
   let body: { title?: string };
   try {
@@ -74,7 +77,7 @@ export async function POST(req: Request, ctx: Ctx) {
   await connectDB();
   const habit = await Habit.create({
     squad: squadId,
-    user: userId,
+    createdBy: userId,
     title,
   });
   return NextResponse.json(
@@ -82,7 +85,7 @@ export async function POST(req: Request, ctx: Ctx) {
       habit: {
         id: String(habit._id),
         title: habit.title,
-        userId: String(habit.user),
+        createdBy: String(habit.createdBy),
       },
     },
     { status: 201 },

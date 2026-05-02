@@ -10,6 +10,6 @@ const HabitLogSchema = new Schema(
   { timestamps: true },
 );
 
-HabitLogSchema.index({ habit: 1, dateKey: 1 }, { unique: true });
+HabitLogSchema.index({ habit: 1, user: 1, dateKey: 1 }, { unique: true });
 
 export default models.HabitLog ?? model("HabitLog", HabitLogSchema);

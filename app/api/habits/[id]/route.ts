@@ -33,12 +33,12 @@ export async function PATCH(req: Request, ctx: Ctx) {
   if (!habit) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (String(habit.user) !== userId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
   const { role } = await getSquadWithMembership(String(habit.squad), userId);
-  if (!role) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (role !== "admin") {
+    return NextResponse.json(
+      { error: "Only admins can edit squad habits" },
+      { status: 403 },
+    );
   }
   const updated = await Habit.findByIdAndUpdate(
     habitId,
@@ -61,12 +61,12 @@ export async function DELETE(_req: Request, ctx: Ctx) {
   if (!habit) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (String(habit.user) !== userId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
   const { role } = await getSquadWithMembership(String(habit.squad), userId);
-  if (!role) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (role !== "admin") {
+    return NextResponse.json(
+      { error: "Only admins can delete squad habits" },
+      { status: 403 },
+    );
   }
   await HabitLog.deleteMany({ habit: habitId });
   await Habit.findByIdAndDelete(habitId);

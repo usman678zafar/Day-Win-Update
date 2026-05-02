@@ -20,19 +20,92 @@ if (!global.mongooseCache) {
   global.mongooseCache = cache;
 }
 
-/** One-time fix for legacy / corrupted habitlogs (bad indexes + null keys). */
+/** One-time: squad habits + per-member logs indexes and legacy cleanup. */
 let habitLogStorageReadyFlag = false;
 let habitLogStoragePromise: Promise<void> | undefined;
+
+async function migrateHabitsToSquadTemplates(): Promise<void> {
+  const { default: Habit } = await import("@/models/Habit");
+  const { default: HabitLog } = await import("@/models/HabitLog");
+  const habitColl = Habit.collection;
+  const logColl = HabitLog.collection;
+
+  for (const name of ["squad_1_user_1"]) {
+    try {
+      await habitColl.dropIndex(name);
+    } catch {
+      /* missing */
+    }
+  }
+
+  await habitColl.updateMany(
+    { createdBy: { $exists: false }, user: { $exists: true } },
+    [{ $set: { createdBy: "$user" } }],
+  );
+  await habitColl.updateMany({}, { $unset: { user: "" } });
+
+  const habits = await Habit.find({}).sort({ _id: 1 }).lean();
+  const groups = new Map<string, (typeof habits)[number][]>();
+  for (const h of habits) {
+    const squadId = String(h.squad);
+    const titleKey = String(h.title).trim().toLowerCase();
+    const gkey = `${squadId}\0${titleKey}`;
+    const arr = groups.get(gkey) ?? [];
+    arr.push(h);
+    groups.set(gkey, arr);
+  }
+  for (const arr of groups.values()) {
+    if (arr.length <= 1) continue;
+    const keeperId = arr[0]!._id;
+    const dupIds = arr.slice(1).map((x) => x._id);
+    if (dupIds.length === 0) continue;
+    await logColl.updateMany(
+      { habit: { $in: dupIds } },
+      { $set: { habit: keeperId } },
+    );
+    await Habit.deleteMany({ _id: { $in: dupIds } });
+  }
+}
+
+async function dedupeHabitLogs(): Promise<void> {
+  const { default: HabitLog } = await import("@/models/HabitLog");
+  const dupBatches = await HabitLog.collection
+    .aggregate([
+      {
+        $group: {
+          _id: { habit: "$habit", user: "$user", dateKey: "$dateKey" },
+          ids: { $push: "$_id" },
+          count: { $sum: 1 },
+        },
+      },
+      { $match: { count: { $gt: 1 } } },
+    ])
+    .toArray();
+
+  for (const row of dupBatches) {
+    const ids = row.ids as mongoose.Types.ObjectId[];
+    if (!ids || ids.length < 2) continue;
+    const [, ...rest] = ids;
+    await HabitLog.deleteMany({ _id: { $in: rest } });
+  }
+}
 
 async function runHabitLogStorageMigration(): Promise<void> {
   if (habitLogStorageReadyFlag) {
     return;
   }
   habitLogStoragePromise ??= (async () => {
+    const { default: Habit } = await import("@/models/Habit");
     const { default: HabitLog } = await import("@/models/HabitLog");
     const coll = HabitLog.collection;
 
-    for (const name of ["habitId_1_date_1", "habit_1_dateKey_1"]) {
+    await migrateHabitsToSquadTemplates();
+
+    for (const name of [
+      "habitId_1_date_1",
+      "habit_1_dateKey_1",
+      "habit_1_user_1_dateKey_1",
+    ]) {
       try {
         await coll.dropIndex(name);
       } catch {
@@ -44,13 +117,17 @@ async function runHabitLogStorageMigration(): Promise<void> {
       $or: [
         { habit: null },
         { habit: { $exists: false } },
+        { user: null },
+        { user: { $exists: false } },
         { dateKey: null },
         { dateKey: { $exists: false } },
         { dateKey: "" },
       ],
     });
 
+    await dedupeHabitLogs();
     await HabitLog.syncIndexes();
+    await Habit.syncIndexes();
     habitLogStorageReadyFlag = true;
     habitLogStoragePromise = undefined;
   })();

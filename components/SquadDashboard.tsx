@@ -42,7 +42,7 @@ type TrackerResponse = {
   squadId: string;
   days: string[];
   habits: TrackerHabitRow[];
-  logs: { habitId: string; dateKey: string; completed: boolean }[];
+  logs: { habitId: string; userId: string; dateKey: string; completed: boolean }[];
   currentUserId: string;
 };
 
@@ -50,7 +50,7 @@ function logsToSet(logs: TrackerResponse["logs"]) {
   const s = new Set<string>();
   for (const l of logs) {
     if (l.completed) {
-      s.add(`${l.habitId}:${l.dateKey}`);
+      s.add(`${l.habitId}:${l.userId}:${l.dateKey}`);
     }
   }
   return s;
@@ -122,9 +122,17 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   }, [squad, loadTracker, viewerTz]);
 
   const onToggle = useCallback(
-    async (habitId: string, dateKey: string, completed: boolean) => {
-      const key = `${habitId}:${dateKey}`;
-      setBusyKey(key);
+    async (
+      habitId: string,
+      memberUserId: string,
+      dateKey: string,
+      completed: boolean,
+    ) => {
+      const me = tracker?.currentUserId;
+      if (!me || memberUserId !== me) return;
+      const key = `${habitId}:${memberUserId}:${dateKey}`;
+      const toggleBusyKey = `${habitId}:${dateKey}`;
+      setBusyKey(toggleBusyKey);
       const res = await fetch("/api/logs", {
         method: "POST",
         headers: {
@@ -149,7 +157,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
         return next;
       });
     },
-    [viewerTz],
+    [viewerTz, tracker?.currentUserId],
   );
 
   const onJoin = async () => {
@@ -378,7 +386,9 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
             logKeySet={logKeySet}
             currentUserId={tracker.currentUserId}
             columnTimeZone={viewerTz}
-            onToggle={(hid, dk, done) => void onToggle(hid, dk, done)}
+            onToggle={(hid, uid, dk, done) =>
+              void onToggle(hid, uid, dk, done)
+            }
             busyKey={busyKey}
           />
         </section>
@@ -387,43 +397,60 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
       )}
 
       <section className="space-y-2">
-        <h2 className="text-sm font-medium text-zinc-800">Your habits</h2>
-        <form className="flex flex-wrap items-end gap-2" onSubmit={onAddHabit}>
-          <div>
-            <label htmlFor="habit-title" className="block text-xs text-zinc-600">
-              New habit
-            </label>
-            <input
-              id="habit-title"
-              className="mt-0.5 rounded border border-zinc-300 px-2 py-1 text-sm"
-              value={habitTitle}
-              onChange={(e) => setHabitTitle(e.target.value)}
-              placeholder="e.g. Morning run"
-            />
-          </div>
-          <button
-            type="submit"
-            className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
-          >
-            Add
-          </button>
-        </form>
+        <h2 className="text-sm font-medium text-zinc-800">
+          {squad.role === "admin" ? "Squad habits" : "Squad habits (admin-managed)"}
+        </h2>
+        {squad.role === "admin" ? (
+          <form className="flex flex-wrap items-end gap-2" onSubmit={onAddHabit}>
+            <div>
+              <label htmlFor="habit-title" className="block text-xs text-zinc-600">
+                New habit for everyone
+              </label>
+              <input
+                id="habit-title"
+                className="mt-0.5 rounded border border-zinc-300 px-2 py-1 text-sm"
+                value={habitTitle}
+                onChange={(e) => setHabitTitle(e.target.value)}
+                placeholder="e.g. Morning run"
+              />
+            </div>
+            <button
+              type="submit"
+              className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
+            >
+              Add
+            </button>
+          </form>
+        ) : (
+          <p className="text-xs text-zinc-600">
+            Each member checks off their own cells; only admins can add or remove habits.
+          </p>
+        )}
         {tracker ? (
           <ul className="mt-2 list-inside list-disc text-sm text-zinc-800">
-            {tracker.habits
-              .filter((h) => h.userId === tracker.currentUserId)
-              .map((h) => (
-                <li key={h.id} className="flex flex-wrap items-center gap-2">
+            {(() => {
+              const seen = new Set<string>();
+              const unique: TrackerHabitRow[] = [];
+              for (const row of tracker.habits) {
+                if (seen.has(row.habitId)) continue;
+                seen.add(row.habitId);
+                unique.push(row);
+              }
+              return unique.map((h) => (
+                <li key={h.habitId} className="flex flex-wrap items-center gap-2">
                   <span>{h.title}</span>
-                  <button
-                    type="button"
-                    className="text-xs underline text-red-800"
-                    onClick={() => void onDeleteHabit(h.id)}
-                  >
-                    Delete
-                  </button>
+                  {squad.role === "admin" ? (
+                    <button
+                      type="button"
+                      className="text-xs underline text-red-800"
+                      onClick={() => void onDeleteHabit(h.habitId)}
+                    >
+                      Delete
+                    </button>
+                  ) : null}
                 </li>
-              ))}
+              ));
+            })()}
           </ul>
         ) : null}
       </section>
