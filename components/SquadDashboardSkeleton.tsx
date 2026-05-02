@@ -15,17 +15,17 @@ export function TrackerTablesSkeleton({
       {Array.from({ length: memberBlocks }).map((_, mi) => (
         <div key={mi} className="space-y-1.5 sm:space-y-2">
           <Skeleton className="h-3.5 w-36 sm:h-4 sm:w-44" />
-          <div className="overflow-x-auto rounded-lg border border-zinc-200/80 bg-zinc-50/30 sm:rounded-xl">
+          <div className="overflow-x-auto rounded-lg border border-zinc-200/80 bg-zinc-50/30 sm:rounded-xl dark:border-zinc-600/60 dark:bg-zinc-900/40">
             <table className="min-w-full border-collapse text-xs sm:text-sm">
               <thead>
-                <tr className="bg-emerald-50/80">
-                  <th className="border border-zinc-200/80 px-1.5 py-1.5 text-left align-middle w-28 sm:w-32 sm:px-2 sm:py-2">
+                <tr className="bg-emerald-50/80 dark:bg-emerald-950/40">
+                  <th className="border border-zinc-200/80 px-1.5 py-1.5 text-left align-middle w-28 sm:w-32 sm:px-2 sm:py-2 dark:border-zinc-600/60">
                     <Skeleton className="h-3 w-12 sm:h-3.5 sm:w-14" />
                   </th>
                   {Array.from({ length: dayCells }).map((_, di) => (
                     <th
                       key={di}
-                      className="border border-zinc-200/80 px-0.5 py-1.5 align-middle sm:px-1 sm:py-2"
+                      className="border border-zinc-200/80 px-0.5 py-1.5 align-middle sm:px-1 sm:py-2 dark:border-zinc-600/60"
                     >
                       <Skeleton className="h-2.5 w-7 mx-auto sm:h-3 sm:w-9" />
                     </th>
@@ -35,13 +35,13 @@ export function TrackerTablesSkeleton({
               <tbody>
                 {Array.from({ length: habitRows }).map((_, ri) => (
                   <tr key={ri}>
-                    <td className="border border-zinc-200/80 px-1.5 py-1.5 align-middle bg-white sm:px-2 sm:py-2">
+                    <td className="border border-zinc-200/80 px-1.5 py-1.5 align-middle bg-white sm:px-2 sm:py-2 dark:border-zinc-600/60 dark:bg-zinc-950/50">
                       <Skeleton className="h-3 w-24 sm:h-3.5 sm:w-28" />
                     </td>
                     {Array.from({ length: dayCells }).map((_, di) => (
                       <td
                         key={di}
-                        className="border border-zinc-200/80 px-0.5 py-1.5 text-center align-middle bg-white sm:px-1 sm:py-2"
+                        className="border border-zinc-200/80 px-0.5 py-1.5 text-center align-middle bg-white sm:px-1 sm:py-2 dark:border-zinc-600/60 dark:bg-zinc-950/50"
                       >
                         <Skeleton className="h-6 w-6 rounded-md mx-auto sm:h-7 sm:w-7" />
                       </td>

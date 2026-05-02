@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #fafaf9;
   --foreground: #18181b;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
 }
 
 @theme inline {
@@ -13,6 +20,7 @@
 
 body {
   color: var(--foreground);
+  transition: background-color 0.35s ease, color 0.25s ease;
 }
 
 @layer base {

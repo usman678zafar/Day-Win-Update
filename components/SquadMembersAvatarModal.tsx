@@ -36,7 +36,7 @@ export function SquadMemberAvatarStack({
     <button
       type="button"
       onClick={onOpen}
-      className="group flex max-w-full min-w-0 touch-manipulation items-center gap-2 rounded-xl border border-transparent p-1 text-left transition hover:border-zinc-200 hover:bg-zinc-50"
+      className="group flex max-w-full min-w-0 touch-manipulation items-center gap-2 rounded-xl border border-transparent p-1 text-left transition hover:border-zinc-200 hover:bg-zinc-50 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/60"
       aria-haspopup="dialog"
       aria-label={`View all ${members.length} members`}
     >
@@ -45,7 +45,7 @@ export function SquadMemberAvatarStack({
           {shown.map((m, i) => (
             <div
               key={m.userId}
-              className="relative z-10 ring-2 ring-white first:ms-0"
+              className="relative z-10 ring-2 ring-white first:ms-0 dark:ring-zinc-900"
               style={{ zIndex: shown.length - i }}
             >
               {m.image ? (
@@ -53,27 +53,27 @@ export function SquadMemberAvatarStack({
                 <img
                   src={m.image}
                   alt=""
-                  className="h-10 w-10 rounded-full bg-zinc-100 object-cover sm:h-11 sm:w-11"
+                  className="h-10 w-10 rounded-full bg-zinc-100 object-cover sm:h-11 sm:w-11 dark:bg-zinc-800"
                 />
               ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 text-xs font-semibold text-emerald-900 sm:h-11 sm:w-11 sm:text-sm">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 text-xs font-semibold text-emerald-900 sm:h-11 sm:w-11 sm:text-sm dark:from-emerald-900/60 dark:to-emerald-800/50 dark:text-emerald-100">
                   {initials(m.name)}
                 </div>
               )}
             </div>
           ))}
           {overflow > 0 ? (
-            <div className="relative z-[12] flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 ring-2 ring-white sm:h-11 sm:w-11 sm:text-sm">
+            <div className="relative z-[12] flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 ring-2 ring-white sm:h-11 sm:w-11 sm:text-sm dark:bg-zinc-700 dark:text-zinc-200 dark:ring-zinc-900">
               +{overflow}
             </div>
           ) : null}
         </div>
       </div>
       <div className="min-w-0 flex-1 sm:flex-initial">
-        <p className="text-xs font-medium text-zinc-600 sm:text-sm">
+        <p className="text-xs font-medium text-zinc-600 sm:text-sm dark:text-zinc-400">
           {members.length} member{members.length === 1 ? "" : "s"}
         </p>
-        <p className="text-[10px] text-zinc-400 group-hover:text-zinc-500 sm:text-xs">
+        <p className="text-[10px] text-zinc-400 group-hover:text-zinc-500 sm:text-xs dark:text-zinc-500 dark:group-hover:text-zinc-400">
           Tap to see everyone
         </p>
       </div>
@@ -117,7 +117,7 @@ export function SquadMembersModal({
     <div className="fixed inset-0 z-[100] flex items-end justify-center p-0 sm:items-center sm:p-4">
       <button
         type="button"
-        className="absolute inset-0 bg-zinc-900/45 backdrop-blur-[1px]"
+        className="absolute inset-0 bg-zinc-900/45 backdrop-blur-[1px] dark:bg-black/65"
         aria-label="Close"
         onClick={onClose}
       />
@@ -125,22 +125,22 @@ export function SquadMembersModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="members-modal-title"
-        className="relative z-10 flex max-h-[90dvh] w-full max-w-md flex-col rounded-t-2xl bg-white shadow-xl sm:max-h-[85vh] sm:rounded-2xl"
+        className="relative z-10 flex max-h-[90dvh] w-full max-w-md flex-col rounded-t-2xl bg-white shadow-xl ring-1 ring-black/[0.04] dark:bg-zinc-900 dark:ring-white/[0.08] sm:max-h-[85vh] sm:rounded-2xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.65)]"
       >
-        <div className="flex items-start justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-5 sm:py-4">
+        <div className="flex items-start justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-5 sm:py-4 dark:border-zinc-800">
           <div className="min-w-0">
             <h2
               id="members-modal-title"
-              className="text-base font-semibold text-zinc-900 sm:text-lg"
+              className="text-base font-semibold text-zinc-900 sm:text-lg dark:text-zinc-50"
             >
               Members
             </h2>
-            <p className="mt-0.5 truncate text-xs text-zinc-500">{squadName}</p>
+            <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">{squadName}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 rounded-lg px-2 py-1 text-sm font-medium text-zinc-600 touch-manipulation hover:bg-zinc-100"
+            className="shrink-0 rounded-lg px-2 py-1 text-sm font-medium text-zinc-600 touch-manipulation hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
             Close
           </button>
@@ -162,7 +162,7 @@ export function SquadMembersModal({
             return (
               <li
                 key={m.userId}
-                className="flex flex-col gap-2 rounded-xl px-2 py-2.5 hover:bg-zinc-50 sm:flex-row sm:items-center sm:gap-3 sm:px-3"
+                className="flex flex-col gap-2 rounded-xl px-2 py-2.5 hover:bg-zinc-50 sm:flex-row sm:items-center sm:gap-3 sm:px-3 dark:hover:bg-zinc-800/70"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   {m.image ? (
@@ -170,19 +170,19 @@ export function SquadMembersModal({
                     <img
                       src={m.image}
                       alt=""
-                      className="h-11 w-11 shrink-0 rounded-full bg-zinc-100 object-cover"
+                      className="h-11 w-11 shrink-0 rounded-full bg-zinc-100 object-cover dark:bg-zinc-800"
                     />
                   ) : (
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 text-sm font-semibold text-emerald-900">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 text-sm font-semibold text-emerald-900 dark:from-emerald-900/60 dark:to-emerald-800/50 dark:text-emerald-100">
                       {initials(m.name)}
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-zinc-900">
+                    <p className="truncate font-medium text-zinc-900 dark:text-zinc-100">
                       {m.name}
                     </p>
                     {m.email ? (
-                      <p className="truncate text-xs text-zinc-500">
+                      <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
                         {m.email}
                       </p>
                     ) : null}
@@ -206,7 +206,7 @@ export function SquadMembersModal({
                       </button>
                       <button
                         type="button"
-                        className={`${ui.btnGhost} text-xs text-red-700 hover:bg-red-50`}
+                        className={`${ui.btnGhost} text-xs text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/50`}
                         onClick={() => onRemoveMember(m.userId)}
                       >
                         Remove
@@ -219,7 +219,7 @@ export function SquadMembersModal({
           })}
         </ul>
         {onLeaveSquad ? (
-          <div className="shrink-0 border-t border-zinc-100 px-4 py-3 sm:px-5">
+          <div className="shrink-0 border-t border-zinc-100 px-4 py-3 sm:px-5 dark:border-zinc-800">
             <button
               type="button"
               className={`${ui.btnSecondary} w-full touch-manipulation sm:w-auto`}
