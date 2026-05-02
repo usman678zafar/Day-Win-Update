@@ -53,8 +53,11 @@ export function TrackerGrid({
       }
       g.rows.push(h);
     }
-    return Array.from(map.values());
-  }, [habits]);
+    const list = Array.from(map.values());
+    const mine = list.filter((g) => g.userId === currentUserId);
+    const others = list.filter((g) => g.userId !== currentUserId);
+    return [...mine, ...others];
+  }, [habits, currentUserId]);
 
   if (habits.length === 0) {
     return (

@@ -3,6 +3,10 @@
 /* eslint-disable react-hooks/set-state-in-effect -- client-side fetch on mount for MVP dashboard */
 
 import { TrackerGrid, type TrackerHabitRow } from "@/components/TrackerGrid";
+import {
+  SquadDashboardPageSkeleton,
+  TrackerTablesSkeleton,
+} from "@/components/SquadDashboardSkeleton";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -314,7 +318,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   }, [squadId]);
 
   if (!squad && !loadError) {
-    return <p className="text-sm text-zinc-600">Loading…</p>;
+    return <SquadDashboardPageSkeleton />;
   }
 
   if (loadError && !squad) {
@@ -393,7 +397,11 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
           />
         </section>
       ) : (
-        <p className="text-sm text-zinc-600">Loading tracker…</p>
+        <section className="space-y-2" aria-busy="true" role="status">
+          <span className="sr-only">Loading habit tracker…</span>
+          <h2 className="text-sm font-medium text-zinc-800">Habit tracker</h2>
+          <TrackerTablesSkeleton />
+        </section>
       )}
 
       <section className="space-y-2">
