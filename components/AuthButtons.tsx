@@ -1,12 +1,13 @@
 "use client";
 
+import { ui } from "@/lib/ui";
 import { signIn, signOut } from "next-auth/react";
 
 export function SignInButton() {
   return (
     <button
       type="button"
-      className="rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50"
+      className={ui.btnPrimary}
       onClick={() => signIn("google")}
     >
       Sign in with Google
@@ -18,7 +19,7 @@ export function SignOutButton() {
   return (
     <button
       type="button"
-      className="rounded border border-zinc-400 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50"
+      className={ui.btnSecondary}
       onClick={() => signOut({ callbackUrl: "/" })}
     >
       Sign out

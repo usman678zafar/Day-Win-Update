@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { toDateKeyUTC } from "@/lib/dates";
 import connectDB from "@/lib/db";
+import { ui } from "@/lib/ui";
 import Squad from "@/models/Squad";
 import Link from "next/link";
 
@@ -18,36 +19,54 @@ export default async function SquadsPage() {
     .lean();
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold">Your squads</h1>
-        <Link
-          href="/squads/new"
-          className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
-        >
+    <div className={ui.page}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1">
+          <h1 className={ui.headingPage}>Your squads</h1>
+          <p className={ui.muted}>
+            Open a squad to track habits and see everyone&apos;s progress.
+          </p>
+        </div>
+        <Link href="/squads/new" className={ui.btnPrimary}>
           New squad
         </Link>
       </div>
+
       {squads.length === 0 ? (
-        <p className="text-sm text-zinc-600">No squads yet. Create one to start.</p>
+        <div className={`${ui.cardMuted} mt-8 max-w-md`}>
+          <p className={ui.muted}>
+            No squads yet. Create one to invite members and start a challenge.
+          </p>
+          <Link href="/squads/new" className={`${ui.btnSecondary} mt-4`}>
+            Create your first squad
+          </Link>
+        </div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
           {squads.map((s) => {
             const role = s.members.find(
               (m: SquadMemberLean) => String(m.user) === userId,
             )?.role;
             return (
-              <li key={String(s._id)} className="border border-zinc-300 p-3">
+              <li key={String(s._id)}>
                 <Link
                   href={`/squads/${String(s._id)}`}
-                  className="font-medium text-zinc-900 underline"
+                  className={`${ui.card} group block transition hover:border-emerald-200/80 hover:shadow-md hover:shadow-emerald-950/5`}
                 >
-                  {s.name}
+                  <div className="flex items-start justify-between gap-2">
+                    <h2 className="font-semibold text-zinc-900 group-hover:text-emerald-900">
+                      {s.name}
+                    </h2>
+                    {role ? (
+                      <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 ring-1 ring-zinc-200/80">
+                        {role}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-2 text-sm text-zinc-500">
+                    {toDateKeyUTC(s.startDate)} — {toDateKeyUTC(s.endDate)}
+                  </p>
                 </Link>
-                <p className="text-xs text-zinc-600">
-                  {toDateKeyUTC(s.startDate)} — {toDateKeyUTC(s.endDate)}
-                  {role ? ` · ${role}` : ""}
-                </p>
               </li>
             );
           })}

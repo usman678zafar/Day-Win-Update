@@ -1,5 +1,6 @@
 "use client";
 
+import { ui } from "@/lib/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,50 +31,56 @@ export default function NewSquadPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md space-y-4 p-4">
-      <h1 className="text-xl font-semibold">New squad</h1>
-      <form onSubmit={onSubmit} className="space-y-3">
-        <label className="block text-sm text-zinc-700">
-          Name
-          <input
-            required
-            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Challenge name"
-          />
-        </label>
-        <label className="block text-sm text-zinc-700">
-          Start date
-          <input
-            required
-            type="date"
-            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </label>
-        <label className="block text-sm text-zinc-700">
-          End date
-          <input
-            required
-            type="date"
-            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </label>
-        {error ? <p className="text-sm text-red-700">{error}</p> : null}
-        <button
-          type="submit"
-          className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
-        >
-          Create
-        </button>
-      </form>
-      <Link href="/squads" className="text-sm text-zinc-700 underline">
-        Back to squads
-      </Link>
+    <div className={`${ui.page} max-w-xl`}>
+      <h1 className={ui.headingPage}>New squad</h1>
+      <p className={`${ui.muted} mt-2 max-w-prose`}>
+        Set a name and date range. You&apos;ll add habits and members from the
+        squad page.
+      </p>
+
+      <div className={`${ui.card} mt-8`}>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <label className="block">
+            <span className={ui.sectionTitle}>Name</span>
+            <input
+              required
+              className={`${ui.input} mt-2`}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Strong May challenge"
+            />
+          </label>
+          <label className="block">
+            <span className={ui.sectionTitle}>Start date</span>
+            <input
+              required
+              type="date"
+              className={`${ui.input} mt-2`}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </label>
+          <label className="block">
+            <span className={ui.sectionTitle}>End date</span>
+            <input
+              required
+              type="date"
+              className={`${ui.input} mt-2`}
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </label>
+          {error ? <p className={ui.errorBox}>{error}</p> : null}
+          <div className="flex flex-wrap gap-3 pt-2">
+            <button type="submit" className={ui.btnPrimary}>
+              Create squad
+            </button>
+            <Link href="/squads" className={`${ui.btnSecondary} inline-flex`}>
+              Cancel
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

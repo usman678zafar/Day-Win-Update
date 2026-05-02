@@ -1,4 +1,5 @@
 import { SquadDashboard } from "@/components/SquadDashboard";
+import { ui } from "@/lib/ui";
 
 export default async function SquadDetailPage({
   params,
@@ -8,7 +9,7 @@ export default async function SquadDetailPage({
   const { id } = await params;
 
   return (
-    <div className="mx-auto max-w-6xl p-4">
+    <div className={ui.page}>
       <SquadDashboard squadId={id} />
     </div>
   );

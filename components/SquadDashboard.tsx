@@ -7,6 +7,7 @@ import {
   SquadDashboardPageSkeleton,
   TrackerTablesSkeleton,
 } from "@/components/SquadDashboardSkeleton";
+import { ui } from "@/lib/ui";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -323,10 +324,10 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
 
   if (loadError && !squad) {
     return (
-      <div className="space-y-2">
-        <p className="text-sm text-red-700">{loadError}</p>
-        <Link href="/squads" className="text-sm underline">
-          Back to squads
+      <div className={`${ui.cardMuted} space-y-4 max-w-lg`}>
+        <p className={ui.errorBox}>{loadError}</p>
+        <Link href="/squads" className={ui.link}>
+          ← Back to squads
         </Link>
       </div>
     );
@@ -338,26 +339,22 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
 
   if (!squad.joined) {
     return (
-      <div className="space-y-4">
-        <h1 className="text-xl font-semibold">{squad.name}</h1>
-        <p className="text-sm text-zinc-700">
+      <div className={`${ui.card} max-w-xl space-y-5`}>
+        <h1 className={ui.headingCard}>{squad.name}</h1>
+        <p className={ui.muted}>
           {squad.startDateKey} → {squad.endDateKey} · {squad.memberCount}{" "}
           members
         </p>
-        <p className="text-sm">You are not in this squad yet.</p>
-        <button
-          type="button"
-          className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
-          onClick={() => void onJoin()}
-        >
+        <p className="text-sm text-zinc-800">
+          You are not in this squad yet.
+        </p>
+        <button type="button" className={ui.btnPrimary} onClick={() => void onJoin()}>
           Join squad
         </button>
-        {loadError ? (
-          <p className="text-sm text-red-700">{loadError}</p>
-        ) : null}
+        {loadError ? <p className={ui.errorBox}>{loadError}</p> : null}
         <div>
-          <Link href="/squads" className="text-sm underline">
-            Back to squads
+          <Link href="/squads" className={ui.link}>
+            ← Back to squads
           </Link>
         </div>
       </div>
@@ -365,77 +362,103 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold">{squad.name}</h1>
-        <p className="text-sm text-zinc-700">
-          Range: {squad.startDateKey} → {squad.endDateKey} · Your role:{" "}
-          {squad.role}
-        </p>
-        <p className="mt-1 text-xs text-zinc-600 break-all">
-          Share: {shareUrl}
-        </p>
-      </div>
+    <div className="space-y-8">
+      <header className={ui.card}>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className={ui.headingPage}>{squad.name}</h1>
+            <p className={`${ui.muted} mt-2`}>
+              <span className="font-medium text-zinc-700">
+                {squad.startDateKey}
+              </span>
+              <span className="mx-1.5 text-zinc-400">→</span>
+              <span className="font-medium text-zinc-700">
+                {squad.endDateKey}
+              </span>
+              <span className="mx-2 text-zinc-300">·</span>
+              <span className={ui.badge}>
+                {squad.role === "admin" ? "Admin" : "Member"}
+              </span>
+            </p>
+          </div>
+          <Link href="/squads" className={`${ui.btnSecondary} shrink-0 text-sm`}>
+            All squads
+          </Link>
+        </div>
+        <div className="mt-4 rounded-xl border border-dashed border-zinc-200 bg-zinc-50/80 px-3 py-2">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+            Share link
+          </p>
+          <p className="mt-1 break-all font-mono text-xs text-zinc-700">
+            {shareUrl}
+          </p>
+        </div>
+      </header>
 
-      {loadError ? (
-        <p className="text-sm text-red-700">{loadError}</p>
-      ) : null}
+      {loadError ? <p className={ui.errorBox}>{loadError}</p> : null}
 
       {tracker ? (
-        <section className="space-y-2">
-          <h2 className="text-sm font-medium text-zinc-800">Habit tracker</h2>
-          <TrackerGrid
-            days={tracker.days}
-            habits={tracker.habits}
-            logKeySet={logKeySet}
-            currentUserId={tracker.currentUserId}
-            columnTimeZone={viewerTz}
-            onToggle={(hid, uid, dk, done) =>
-              void onToggle(hid, uid, dk, done)
-            }
-            busyKey={busyKey}
-          />
+        <section className={ui.card}>
+          <h2 className={ui.sectionTitle}>Habit tracker</h2>
+          <div className="mt-4">
+            <TrackerGrid
+              days={tracker.days}
+              habits={tracker.habits}
+              logKeySet={logKeySet}
+              currentUserId={tracker.currentUserId}
+              columnTimeZone={viewerTz}
+              onToggle={(hid, uid, dk, done) =>
+                void onToggle(hid, uid, dk, done)
+              }
+              busyKey={busyKey}
+            />
+          </div>
         </section>
       ) : (
-        <section className="space-y-2" aria-busy="true" role="status">
+        <section className={ui.card} aria-busy="true" role="status">
           <span className="sr-only">Loading habit tracker…</span>
-          <h2 className="text-sm font-medium text-zinc-800">Habit tracker</h2>
-          <TrackerTablesSkeleton />
+          <h2 className={ui.sectionTitle}>Habit tracker</h2>
+          <div className="mt-4">
+            <TrackerTablesSkeleton />
+          </div>
         </section>
       )}
 
-      <section className="space-y-2">
-        <h2 className="text-sm font-medium text-zinc-800">
-          {squad.role === "admin" ? "Squad habits" : "Squad habits (admin-managed)"}
+      <section className={ui.card}>
+        <h2 className={ui.sectionTitle}>
+          {squad.role === "admin"
+            ? "Squad habits"
+            : "Squad habits (admin-managed)"}
         </h2>
         {squad.role === "admin" ? (
-          <form className="flex flex-wrap items-end gap-2" onSubmit={onAddHabit}>
-            <div>
-              <label htmlFor="habit-title" className="block text-xs text-zinc-600">
+          <form
+            className="mt-4 flex flex-wrap items-end gap-3"
+            onSubmit={onAddHabit}
+          >
+            <div className="min-w-[12rem] flex-1">
+              <label htmlFor="habit-title" className={ui.sectionTitle}>
                 New habit for everyone
               </label>
               <input
                 id="habit-title"
-                className="mt-0.5 rounded border border-zinc-300 px-2 py-1 text-sm"
+                className={`${ui.input} mt-2`}
                 value={habitTitle}
                 onChange={(e) => setHabitTitle(e.target.value)}
                 placeholder="e.g. Morning run"
               />
             </div>
-            <button
-              type="submit"
-              className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
-            >
-              Add
+            <button type="submit" className={ui.btnPrimary}>
+              Add habit
             </button>
           </form>
         ) : (
-          <p className="text-xs text-zinc-600">
-            Each member checks off their own cells; only admins can add or remove habits.
+          <p className={`${ui.muted} mt-3`}>
+            Each member checks off their own cells; only admins can add or remove
+            habits.
           </p>
         )}
         {tracker ? (
-          <ul className="mt-2 list-inside list-disc text-sm text-zinc-800">
+          <ul className="mt-4 divide-y divide-zinc-100 rounded-xl border border-zinc-100 bg-zinc-50/50">
             {(() => {
               const seen = new Set<string>();
               const unique: TrackerHabitRow[] = [];
@@ -445,12 +468,17 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
                 unique.push(row);
               }
               return unique.map((h) => (
-                <li key={h.habitId} className="flex flex-wrap items-center gap-2">
-                  <span>{h.title}</span>
+                <li
+                  key={h.habitId}
+                  className="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5"
+                >
+                  <span className="text-sm font-medium text-zinc-800">
+                    {h.title}
+                  </span>
                   {squad.role === "admin" ? (
                     <button
                       type="button"
-                      className="text-xs underline text-red-800"
+                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-800 transition hover:bg-red-100"
                       onClick={() => void onDeleteHabit(h.habitId)}
                     >
                       Delete
@@ -463,52 +491,47 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
         ) : null}
       </section>
 
-      <section className="space-y-2 border-t border-zinc-200 pt-4">
-        <h2 className="text-sm font-medium text-zinc-800">Membership</h2>
+      <section className={ui.card}>
+        <h2 className={ui.sectionTitle}>Membership</h2>
         {squad.role === "admin" ? (
           <form
-            className="flex flex-wrap items-end gap-2 border-b border-zinc-100 pb-3"
+            className="mt-4 flex flex-wrap items-end gap-3 border-b border-zinc-100 pb-4"
             onSubmit={onAddMember}
           >
-            <div>
-              <label
-                htmlFor="add-member-email"
-                className="block text-xs text-zinc-600"
-              >
+            <div className="min-w-[14rem] flex-1">
+              <label htmlFor="add-member-email" className={ui.sectionTitle}>
                 Add member (Google email)
               </label>
               <input
                 id="add-member-email"
                 type="email"
                 autoComplete="email"
-                className="mt-0.5 rounded border border-zinc-300 px-2 py-1 text-sm min-w-[14rem]"
+                className={`${ui.input} mt-2`}
                 value={addMemberEmail}
                 onChange={(e) => setAddMemberEmail(e.target.value)}
                 placeholder="friend@example.com"
               />
             </div>
-            <button
-              type="submit"
-              className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
-            >
-              Add
+            <button type="submit" className={ui.btnPrimary}>
+              Add member
             </button>
           </form>
         ) : null}
-        <ul className="text-sm space-y-1">
+        <ul className="mt-4 space-y-1">
           {squad.members.map((m) => (
             <li
               key={m.userId}
-              className="flex flex-wrap items-center gap-2 border-b border-zinc-100 py-1"
+              className="flex flex-wrap items-center gap-2 rounded-lg border border-zinc-100 bg-white px-3 py-2.5"
             >
-              <span>
-                {m.name} ({m.role})
+              <span className="text-sm text-zinc-800">
+                <span className="font-medium">{m.name}</span>{" "}
+                <span className="text-zinc-500">({m.role})</span>
               </span>
               {squad.role === "admin" && m.userId !== tracker?.currentUserId ? (
                 <>
                   <button
                     type="button"
-                    className="text-xs underline"
+                    className={`${ui.btnGhost} text-xs`}
                     onClick={() =>
                       void onSetRole(
                         m.userId,
@@ -520,7 +543,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
                   </button>
                   <button
                     type="button"
-                    className="text-xs underline text-red-800"
+                    className={`${ui.btnGhost} text-xs text-red-700 hover:bg-red-50`}
                     onClick={() => void onRemoveMember(m.userId)}
                   >
                     Remove
@@ -532,7 +555,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
         </ul>
         <button
           type="button"
-          className="mt-2 rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50"
+          className={`${ui.btnSecondary} mt-4`}
           onClick={() => void onLeave()}
         >
           Leave squad
@@ -540,45 +563,42 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
       </section>
 
       {squad.role === "admin" ? (
-        <section className="space-y-2 border-t border-zinc-200 pt-4">
-          <h2 className="text-sm font-medium text-zinc-800">Admin</h2>
-          <form className="grid max-w-md gap-2" onSubmit={onSaveAdmin}>
-            <label className="text-xs text-zinc-600">
-              Name
+        <section className="rounded-2xl border border-amber-200/80 bg-amber-50/35 p-5 shadow-sm sm:p-6">
+          <h2 className={ui.sectionTitle}>Admin</h2>
+          <form className="mt-4 grid max-w-md gap-3" onSubmit={onSaveAdmin}>
+            <label className="block">
+              <span className={ui.sectionTitle}>Squad name</span>
               <input
-                className="mt-0.5 w-full rounded border border-zinc-300 px-2 py-1 text-sm"
+                className={`${ui.input} mt-2`}
                 value={adminName}
                 onChange={(e) => setAdminName(e.target.value)}
               />
             </label>
-            <label className="text-xs text-zinc-600">
-              Start date
+            <label className="block">
+              <span className={ui.sectionTitle}>Start date</span>
               <input
                 type="date"
-                className="mt-0.5 w-full rounded border border-zinc-300 px-2 py-1 text-sm"
+                className={`${ui.input} mt-2`}
                 value={adminStart}
                 onChange={(e) => setAdminStart(e.target.value)}
               />
             </label>
-            <label className="text-xs text-zinc-600">
-              End date
+            <label className="block">
+              <span className={ui.sectionTitle}>End date</span>
               <input
                 type="date"
-                className="mt-0.5 w-full rounded border border-zinc-300 px-2 py-1 text-sm"
+                className={`${ui.input} mt-2`}
                 value={adminEnd}
                 onChange={(e) => setAdminEnd(e.target.value)}
               />
             </label>
-            <button
-              type="submit"
-              className="rounded border border-zinc-400 px-3 py-1.5 text-sm hover:bg-zinc-50 w-fit"
-            >
+            <button type="submit" className={`${ui.btnPrimary} w-fit`}>
               Save squad
             </button>
           </form>
           <button
             type="button"
-            className="rounded border border-red-300 bg-red-50 px-3 py-1.5 text-sm text-red-900"
+            className={`${ui.btnDanger} mt-4`}
             onClick={() => void onDeleteSquad()}
           >
             Delete squad
