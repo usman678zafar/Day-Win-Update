@@ -16,7 +16,7 @@ export default async function HomePage() {
   return (
     <div className={ui.page}>
       <article
-        className="flex min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-emerald-100/80 bg-gradient-to-br from-white to-emerald-50/45 shadow-sm shadow-zinc-950/[0.04] transition-colors duration-300 dark:border-white/10 dark:bg-[#262626] dark:shadow-none lg:min-h-[calc(100dvh-6rem)] lg:flex-row lg:rounded-3xl"
+        className="flex min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-emerald-100/80 bg-gradient-to-br from-white to-emerald-50/45 shadow-sm shadow-zinc-950/[0.04] transition-colors duration-300 dark:border-white/10 dark:shadow-none lg:min-h-[calc(100dvh-6rem)] lg:flex-row lg:rounded-3xl"
       >
         <div
           className="relative overflow-hidden px-4 py-8 min-[400px]:px-5 sm:px-8 sm:py-10 lg:w-[min(100%,26rem)] lg:shrink-0 lg:border-r lg:border-emerald-100/90 lg:px-10 lg:py-12 xl:w-[min(100%,30rem)] dark:lg:border-white/10"
@@ -24,10 +24,10 @@ export default async function HomePage() {
           <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-emerald-200/45 blur-3xl dark:hidden" />
           <div className="pointer-events-none absolute -bottom-8 -left-6 h-36 w-36 rounded-full bg-amber-100/45 blur-2xl dark:hidden" />
           <div className="relative flex flex-col justify-center gap-5 sm:gap-6">
-            <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-zinc-900 sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1] dark:text-neutral-200">
+            <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-zinc-900 sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
               Win the day together
             </h1>
-            <p className="max-w-xl text-sm leading-relaxed text-zinc-600 sm:text-base sm:leading-relaxed dark:text-neutral-400">
+            <p className="max-w-xl text-sm leading-relaxed text-zinc-600 sm:text-base sm:leading-relaxed">
               Habit tracking with squad accountability. Sign in with Google to
               create or join a squad, define habits with your group, and log
               progress everyone can see—while only you check your own cells.
@@ -42,6 +42,13 @@ export default async function HomePage() {
             ) : (
               <SignInButton />
             )}
+            <div className="mt-6 flex justify-center">
+              <img
+                src="/image.jpg"
+                alt="Motivational image for daily habit tracking and growth"
+                className="rounded-xl shadow-lg w-full max-w-sm h-auto"
+              />
+            </div>
           </div>
         </div>
 
