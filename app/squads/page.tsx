@@ -57,19 +57,19 @@ export default async function SquadsPage() {
               <li key={String(s._id)}>
                 <Link
                   href={`/squads/${String(s._id)}`}
-                  className={`${ui.card} group block transition hover:border-emerald-200/80 hover:shadow-md hover:shadow-emerald-950/5 dark:hover:border-emerald-700/50 dark:hover:shadow-emerald-950/20`}
+                  className={`${ui.card} group block transition hover:border-emerald-200/80 hover:shadow-sm sm:hover:shadow-emerald-950/5 dark:border-white/10 dark:hover:border-white/15 dark:hover:shadow-none`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h2 className="font-semibold text-zinc-900 group-hover:text-emerald-900 dark:text-zinc-100 dark:group-hover:text-emerald-300">
+                    <h2 className="font-semibold text-zinc-900 group-hover:text-emerald-900 dark:text-neutral-200 dark:group-hover:text-emerald-500/90">
                       {s.name}
                     </h2>
                     {role ? (
-                      <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 ring-1 ring-zinc-200/80 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-600/60">
+                      <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-white/[0.08] dark:text-neutral-400">
                         {role}
                       </span>
                     ) : null}
                   </div>
-                  <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-2 text-sm text-zinc-500 dark:text-neutral-500">
                     {toDateKeyUTC(s.startDate)} — {toDateKeyUTC(s.endDate)}
                   </p>
                 </Link>

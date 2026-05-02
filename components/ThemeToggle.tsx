@@ -1,30 +1,19 @@
 "use client";
 
+import {
+  applyThemeMode,
+  getResolvedThemeMode,
+  type ThemeMode,
+} from "@/lib/theme";
 import { useEffect, useState } from "react";
-
-const STORAGE_KEY = "day-win-theme";
-
-function applyTheme(mode: "light" | "dark") {
-  document.documentElement.classList.toggle("dark", mode === "dark");
-  localStorage.setItem(STORAGE_KEY, mode);
-  const content = mode === "dark" ? "#09090b" : "#fafaf9";
-  document
-    .querySelectorAll('meta[name="theme-color"]')
-    .forEach((el) => el.setAttribute("content", content));
-}
-
-function readMode(): "light" | "dark" {
-  if (typeof document === "undefined") return "light";
-  return document.documentElement.classList.contains("dark") ? "dark" : "light";
-}
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
-  const [mode, setMode] = useState<"light" | "dark">("light");
+  const [mode, setMode] = useState<ThemeMode>("light");
 
   useEffect(() => {
     setMounted(true);
-    setMode(readMode());
+    setMode(getResolvedThemeMode());
   }, []);
 
   if (!mounted) {
@@ -36,17 +25,15 @@ export function ThemeToggle() {
     );
   }
 
-  const nextIsDark = mode === "light";
-
   return (
     <button
       type="button"
       onClick={() => {
-        const next = nextIsDark ? "dark" : "light";
-        applyTheme(next);
+        const next: ThemeMode = mode === "light" ? "dark" : "light";
+        applyThemeMode(next);
         setMode(next);
       }}
-      className="inline-flex h-9 w-9 shrink-0 touch-manipulation items-center justify-center rounded-xl border border-zinc-200/90 bg-white/90 text-zinc-600 shadow-sm backdrop-blur-sm transition-all duration-200 hover:border-emerald-400/55 hover:bg-gradient-to-br hover:from-emerald-50 hover:to-white hover:text-emerald-800 hover:shadow-emerald-500/10 active:scale-[0.97] dark:border-zinc-600/80 dark:bg-zinc-800/90 dark:text-amber-100/90 dark:shadow-black/30 dark:hover:border-amber-500/35 dark:hover:from-amber-500/15 dark:hover:to-zinc-800 dark:hover:text-amber-50 dark:hover:shadow-amber-500/15"
+      className="relative z-[60] inline-flex h-9 w-9 shrink-0 touch-manipulation items-center justify-center rounded-xl border border-zinc-200/90 bg-white/90 text-zinc-600 transition-colors duration-200 hover:bg-zinc-50 hover:text-zinc-800 active:scale-[0.97] dark:border-white/12 dark:bg-white/[0.06] dark:text-neutral-400 dark:shadow-none dark:hover:bg-white/[0.1] dark:hover:text-neutral-200"
       aria-label={mode === "dark" ? "Switch to light theme" : "Switch to dark theme"}
     >
       {mode === "dark" ? (

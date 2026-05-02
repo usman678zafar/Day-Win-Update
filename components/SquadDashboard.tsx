@@ -353,7 +353,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
           {squad.startDateKey} → {squad.endDateKey} · {squad.memberCount}{" "}
           members
         </p>
-        <p className="text-sm text-zinc-800 dark:text-zinc-300">
+        <p className="text-sm text-zinc-800 dark:text-neutral-300">
           You are not in this squad yet.
         </p>
         <button type="button" className={`${ui.btnPrimary} w-full sm:w-auto`} onClick={() => void onJoin()}>
@@ -379,15 +379,15 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
               className={`${ui.muted} mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center`}
             >
               <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                <span className="font-medium text-zinc-700 dark:text-neutral-300">
                   {squad.startDateKey}
                 </span>
-                <span className="text-zinc-400 dark:text-zinc-500">→</span>
-                <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                <span className="text-zinc-400 dark:text-neutral-600">→</span>
+                <span className="font-medium text-zinc-700 dark:text-neutral-300">
                   {squad.endDateKey}
                 </span>
               </span>
-              <span className="hidden sm:inline text-zinc-300 dark:text-zinc-600">·</span>
+              <span className="hidden sm:inline text-zinc-300 dark:text-neutral-700">·</span>
               <span className={ui.badge}>
                 {squad.role === "admin" ? "Admin" : "Member"}
               </span>
@@ -474,7 +474,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
             </button>
           </form>
           {tracker ? (
-            <ul className="mt-3 divide-y divide-zinc-100 rounded-lg border border-zinc-100 bg-zinc-50/50 sm:mt-4 sm:rounded-xl dark:divide-zinc-800 dark:border-zinc-700 dark:bg-zinc-900/40">
+            <ul className="mt-3 divide-y divide-zinc-100 rounded-lg border border-zinc-100 bg-zinc-50/50 sm:mt-4 sm:rounded-xl dark:divide-white/[0.08] dark:border-white/10 dark:bg-[#262626]">
               {(() => {
                 const seen = new Set<string>();
                 const unique: TrackerHabitRow[] = [];
@@ -488,7 +488,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
                     key={h.habitId}
                     className="flex flex-col gap-1.5 px-2.5 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-3 sm:py-2.5"
                   >
-                    <span className="min-w-0 text-sm font-medium text-zinc-800 dark:text-zinc-200">
+                    <span className="min-w-0 text-sm font-medium text-zinc-800 dark:text-neutral-200">
                       {h.title}
                     </span>
                     <button
@@ -507,10 +507,10 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
       ) : null}
 
       {squad.role === "admin" ? (
-        <section className="rounded-xl border border-amber-200/80 bg-amber-50/35 p-3 shadow-sm sm:rounded-2xl sm:p-6 dark:border-amber-900/45 dark:bg-amber-950/20 dark:shadow-none">
+        <section className="rounded-xl border border-amber-200/80 bg-amber-50/35 p-3 sm:rounded-2xl sm:p-6 dark:border-white/10 dark:bg-[#262626]">
           <h2 className={ui.sectionTitle}>Admin</h2>
           <form
-            className="mt-3 flex flex-col gap-2.5 border-b border-amber-200/60 pb-4 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3 sm:pb-5 dark:border-amber-900/35"
+            className="mt-3 flex flex-col gap-2.5 border-b border-amber-200/60 pb-4 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3 sm:pb-5 dark:border-white/10"
             onSubmit={onAddMember}
           >
             <div className="min-w-0 w-full flex-1 sm:min-w-[14rem] sm:max-w-md">
