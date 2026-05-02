@@ -15,7 +15,8 @@ body {
   color: var(--foreground);
 }
 
-::selection {
-  background: rgb(16 185 129 / 0.22);
-  color: rgb(24 24 27);
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
 }

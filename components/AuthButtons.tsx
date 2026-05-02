@@ -7,7 +7,7 @@ export function SignInButton() {
   return (
     <button
       type="button"
-      className={ui.btnPrimary}
+      className={`${ui.btnPrimary} w-full sm:w-auto`}
       onClick={() => signIn("google")}
     >
       Sign in with Google
@@ -19,7 +19,7 @@ export function SignOutButton() {
   return (
     <button
       type="button"
-      className={ui.btnSecondary}
+      className={`${ui.btnSecondary} shrink-0`}
       onClick={() => signOut({ callbackUrl: "/" })}
     >
       Sign out

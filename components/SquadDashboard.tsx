@@ -9,7 +9,7 @@ import {
 } from "@/components/SquadDashboardSkeleton";
 import { ui } from "@/lib/ui";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type SquadMember = {
   userId: string;
@@ -313,18 +313,13 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
     await loadTracker();
   };
 
-  const shareUrl = useMemo(() => {
-    if (typeof window === "undefined") return "";
-    return `${window.location.origin}/squads/${squadId}`;
-  }, [squadId]);
-
   if (!squad && !loadError) {
     return <SquadDashboardPageSkeleton />;
   }
 
   if (loadError && !squad) {
     return (
-      <div className={`${ui.cardMuted} space-y-4 max-w-lg`}>
+      <div className={`${ui.cardMuted} space-y-3 max-w-lg sm:space-y-4`}>
         <p className={ui.errorBox}>{loadError}</p>
         <Link href="/squads" className={ui.link}>
           ← Back to squads
@@ -339,7 +334,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
 
   if (!squad.joined) {
     return (
-      <div className={`${ui.card} max-w-xl space-y-5`}>
+      <div className={`${ui.card} w-full max-w-xl min-w-0 space-y-3 sm:space-y-5`}>
         <h1 className={ui.headingCard}>{squad.name}</h1>
         <p className={ui.muted}>
           {squad.startDateKey} → {squad.endDateKey} · {squad.memberCount}{" "}
@@ -348,7 +343,7 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
         <p className="text-sm text-zinc-800">
           You are not in this squad yet.
         </p>
-        <button type="button" className={ui.btnPrimary} onClick={() => void onJoin()}>
+        <button type="button" className={`${ui.btnPrimary} w-full sm:w-auto`} onClick={() => void onJoin()}>
           Join squad
         </button>
         {loadError ? <p className={ui.errorBox}>{loadError}</p> : null}
@@ -362,45 +357,44 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-4 sm:space-y-8">
       <header className={ui.card}>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+          <div className="min-w-0 flex-1">
             <h1 className={ui.headingPage}>{squad.name}</h1>
-            <p className={`${ui.muted} mt-2`}>
-              <span className="font-medium text-zinc-700">
-                {squad.startDateKey}
+            <p
+              className={`${ui.muted} mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center`}
+            >
+              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                <span className="font-medium text-zinc-700">
+                  {squad.startDateKey}
+                </span>
+                <span className="text-zinc-400">→</span>
+                <span className="font-medium text-zinc-700">
+                  {squad.endDateKey}
+                </span>
               </span>
-              <span className="mx-1.5 text-zinc-400">→</span>
-              <span className="font-medium text-zinc-700">
-                {squad.endDateKey}
-              </span>
-              <span className="mx-2 text-zinc-300">·</span>
+              <span className="hidden sm:inline text-zinc-300">·</span>
               <span className={ui.badge}>
                 {squad.role === "admin" ? "Admin" : "Member"}
               </span>
             </p>
           </div>
-          <Link href="/squads" className={`${ui.btnSecondary} shrink-0 text-sm`}>
+          <Link
+            href="/squads"
+            className={`${ui.btnSecondary} w-full shrink-0 sm:w-auto`}
+          >
             All squads
           </Link>
-        </div>
-        <div className="mt-4 rounded-xl border border-dashed border-zinc-200 bg-zinc-50/80 px-3 py-2">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-            Share link
-          </p>
-          <p className="mt-1 break-all font-mono text-xs text-zinc-700">
-            {shareUrl}
-          </p>
         </div>
       </header>
 
       {loadError ? <p className={ui.errorBox}>{loadError}</p> : null}
 
       {tracker ? (
-        <section className={ui.card}>
+        <section className={`${ui.card} overflow-hidden`}>
           <h2 className={ui.sectionTitle}>Habit tracker</h2>
-          <div className="mt-4">
+          <div className="mt-3 sm:mt-4">
             <TrackerGrid
               days={tracker.days}
               habits={tracker.habits}
@@ -415,27 +409,23 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
           </div>
         </section>
       ) : (
-        <section className={ui.card} aria-busy="true" role="status">
+        <section className={`${ui.card} overflow-hidden`} aria-busy="true" role="status">
           <span className="sr-only">Loading habit tracker…</span>
           <h2 className={ui.sectionTitle}>Habit tracker</h2>
-          <div className="mt-4">
+          <div className="mt-3 sm:mt-4">
             <TrackerTablesSkeleton />
           </div>
         </section>
       )}
 
-      <section className={ui.card}>
-        <h2 className={ui.sectionTitle}>
-          {squad.role === "admin"
-            ? "Squad habits"
-            : "Squad habits (admin-managed)"}
-        </h2>
-        {squad.role === "admin" ? (
+      {squad.role === "admin" ? (
+        <section className={ui.card}>
+          <h2 className={ui.sectionTitle}>Squad habits</h2>
           <form
-            className="mt-4 flex flex-wrap items-end gap-3"
+            className="mt-3 flex flex-col gap-2.5 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3"
             onSubmit={onAddHabit}
           >
-            <div className="min-w-[12rem] flex-1">
+            <div className="min-w-0 w-full flex-1 sm:min-w-[12rem] sm:max-w-md">
               <label htmlFor="habit-title" className={ui.sectionTitle}>
                 New habit for everyone
               </label>
@@ -447,58 +437,54 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
                 placeholder="e.g. Morning run"
               />
             </div>
-            <button type="submit" className={ui.btnPrimary}>
+            <button
+              type="submit"
+              className={`${ui.btnPrimary} w-full shrink-0 sm:w-auto`}
+            >
               Add habit
             </button>
           </form>
-        ) : (
-          <p className={`${ui.muted} mt-3`}>
-            Each member checks off their own cells; only admins can add or remove
-            habits.
-          </p>
-        )}
-        {tracker ? (
-          <ul className="mt-4 divide-y divide-zinc-100 rounded-xl border border-zinc-100 bg-zinc-50/50">
-            {(() => {
-              const seen = new Set<string>();
-              const unique: TrackerHabitRow[] = [];
-              for (const row of tracker.habits) {
-                if (seen.has(row.habitId)) continue;
-                seen.add(row.habitId);
-                unique.push(row);
-              }
-              return unique.map((h) => (
-                <li
-                  key={h.habitId}
-                  className="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5"
-                >
-                  <span className="text-sm font-medium text-zinc-800">
-                    {h.title}
-                  </span>
-                  {squad.role === "admin" ? (
+          {tracker ? (
+            <ul className="mt-3 divide-y divide-zinc-100 rounded-lg border border-zinc-100 bg-zinc-50/50 sm:mt-4 sm:rounded-xl">
+              {(() => {
+                const seen = new Set<string>();
+                const unique: TrackerHabitRow[] = [];
+                for (const row of tracker.habits) {
+                  if (seen.has(row.habitId)) continue;
+                  seen.add(row.habitId);
+                  unique.push(row);
+                }
+                return unique.map((h) => (
+                  <li
+                    key={h.habitId}
+                    className="flex flex-col gap-1.5 px-2.5 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-3 sm:py-2.5"
+                  >
+                    <span className="min-w-0 text-sm font-medium text-zinc-800">
+                      {h.title}
+                    </span>
                     <button
                       type="button"
-                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-800 transition hover:bg-red-100"
+                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800 touch-manipulation transition hover:bg-red-100 sm:shrink-0 sm:py-1.5"
                       onClick={() => void onDeleteHabit(h.habitId)}
                     >
                       Delete
                     </button>
-                  ) : null}
-                </li>
-              ));
-            })()}
-          </ul>
-        ) : null}
-      </section>
+                  </li>
+                ));
+              })()}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
 
       <section className={ui.card}>
         <h2 className={ui.sectionTitle}>Membership</h2>
         {squad.role === "admin" ? (
           <form
-            className="mt-4 flex flex-wrap items-end gap-3 border-b border-zinc-100 pb-4"
+            className="mt-3 flex flex-col gap-2.5 border-b border-zinc-100 pb-3 sm:mt-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3 sm:pb-4"
             onSubmit={onAddMember}
           >
-            <div className="min-w-[14rem] flex-1">
+            <div className="min-w-0 w-full flex-1 sm:min-w-[14rem] sm:max-w-md">
               <label htmlFor="add-member-email" className={ui.sectionTitle}>
                 Add member (Google email)
               </label>
@@ -512,23 +498,26 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
                 placeholder="friend@example.com"
               />
             </div>
-            <button type="submit" className={ui.btnPrimary}>
+            <button
+              type="submit"
+              className={`${ui.btnPrimary} w-full shrink-0 sm:w-auto`}
+            >
               Add member
             </button>
           </form>
         ) : null}
-        <ul className="mt-4 space-y-1">
+        <ul className="mt-3 space-y-1.5 sm:mt-4 sm:space-y-2">
           {squad.members.map((m) => (
             <li
               key={m.userId}
-              className="flex flex-wrap items-center gap-2 rounded-lg border border-zinc-100 bg-white px-3 py-2.5"
+              className="flex flex-col gap-1.5 rounded-lg border border-zinc-100 bg-white px-2.5 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-3 sm:py-2.5"
             >
-              <span className="text-sm text-zinc-800">
+              <span className="min-w-0 text-sm text-zinc-800">
                 <span className="font-medium">{m.name}</span>{" "}
                 <span className="text-zinc-500">({m.role})</span>
               </span>
               {squad.role === "admin" && m.userId !== tracker?.currentUserId ? (
-                <>
+                <div className="flex flex-wrap gap-2 sm:shrink-0 sm:justify-end">
                   <button
                     type="button"
                     className={`${ui.btnGhost} text-xs`}
@@ -548,14 +537,14 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
                   >
                     Remove
                   </button>
-                </>
+                </div>
               ) : null}
             </li>
           ))}
         </ul>
         <button
           type="button"
-          className={`${ui.btnSecondary} mt-4`}
+          className={`${ui.btnSecondary} mt-4 w-full sm:w-auto`}
           onClick={() => void onLeave()}
         >
           Leave squad
@@ -563,9 +552,9 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
       </section>
 
       {squad.role === "admin" ? (
-        <section className="rounded-2xl border border-amber-200/80 bg-amber-50/35 p-5 shadow-sm sm:p-6">
+        <section className="rounded-xl border border-amber-200/80 bg-amber-50/35 p-3 shadow-sm sm:rounded-2xl sm:p-6">
           <h2 className={ui.sectionTitle}>Admin</h2>
-          <form className="mt-4 grid max-w-md gap-3" onSubmit={onSaveAdmin}>
+          <form className="mt-3 grid max-w-md gap-2.5 sm:mt-4 sm:gap-3" onSubmit={onSaveAdmin}>
             <label className="block">
               <span className={ui.sectionTitle}>Squad name</span>
               <input
@@ -592,13 +581,16 @@ export function SquadDashboard({ squadId }: { squadId: string }) {
                 onChange={(e) => setAdminEnd(e.target.value)}
               />
             </label>
-            <button type="submit" className={`${ui.btnPrimary} w-fit`}>
+            <button
+              type="submit"
+              className={`${ui.btnPrimary} w-full sm:w-fit`}
+            >
               Save squad
             </button>
           </form>
           <button
             type="button"
-            className={`${ui.btnDanger} mt-4`}
+            className={`${ui.btnDanger} mt-4 w-full sm:w-auto`}
             onClick={() => void onDeleteSquad()}
           >
             Delete squad

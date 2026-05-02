@@ -119,7 +119,10 @@ export function isFutureDateKey(
 /**
  * Column header: civil dateKey shown in the given zone (fallback UTC).
  */
-export function formatColumnHeader(dateKey: string, timeZone?: string | null) {
+export function formatColumnHeaderParts(
+  dateKey: string,
+  timeZone?: string | null,
+): { weekday: string; monthDay: string; full: string } {
   const d = parseDateKeyUTC(dateKey);
   const tz = timeZone && timeZone !== "UTC" ? timeZone : "UTC";
   const weekday = d.toLocaleDateString("en-US", {
@@ -131,7 +134,15 @@ export function formatColumnHeader(dateKey: string, timeZone?: string | null) {
     day: "numeric",
     timeZone: tz,
   });
-  return `${weekday} (${monthDay})`;
+  return {
+    weekday,
+    monthDay,
+    full: `${weekday} (${monthDay})`,
+  };
+}
+
+export function formatColumnHeader(dateKey: string, timeZone?: string | null) {
+  return formatColumnHeaderParts(dateKey, timeZone).full;
 }
 
 export function parseBodyDateToUTCStart(input: string): Date {

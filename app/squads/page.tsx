@@ -20,29 +20,35 @@ export default async function SquadsPage() {
 
   return (
     <div className={ui.page}>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
         <div className="space-y-1">
           <h1 className={ui.headingPage}>Your squads</h1>
           <p className={ui.muted}>
             Open a squad to track habits and see everyone&apos;s progress.
           </p>
         </div>
-        <Link href="/squads/new" className={ui.btnPrimary}>
+        <Link
+          href="/squads/new"
+          className={`${ui.btnPrimary} w-full shrink-0 sm:w-auto`}
+        >
           New squad
         </Link>
       </div>
 
       {squads.length === 0 ? (
-        <div className={`${ui.cardMuted} mt-8 max-w-md`}>
+        <div className={`${ui.cardMuted} mt-5 max-w-md sm:mt-8`}>
           <p className={ui.muted}>
             No squads yet. Create one to invite members and start a challenge.
           </p>
-          <Link href="/squads/new" className={`${ui.btnSecondary} mt-4`}>
+          <Link
+            href="/squads/new"
+            className={`${ui.btnSecondary} mt-4 w-full sm:w-auto`}
+          >
             Create your first squad
           </Link>
         </div>
       ) : (
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+        <ul className="mt-5 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4">
           {squads.map((s) => {
             const role = s.members.find(
               (m: SquadMemberLean) => String(m.user) === userId,

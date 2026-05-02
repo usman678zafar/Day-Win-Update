@@ -71,11 +71,17 @@ export default function NewSquadPage() {
             />
           </label>
           {error ? <p className={ui.errorBox}>{error}</p> : null}
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button type="submit" className={ui.btnPrimary}>
+          <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:flex-wrap">
+            <button
+              type="submit"
+              className={`${ui.btnPrimary} w-full sm:w-auto`}
+            >
               Create squad
             </button>
-            <Link href="/squads" className={`${ui.btnSecondary} inline-flex`}>
+            <Link
+              href="/squads"
+              className={`${ui.btnSecondary} inline-flex w-full sm:w-auto`}
+            >
               Cancel
             </Link>
           </div>

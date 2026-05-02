@@ -13,7 +13,7 @@ export default async function HomePage() {
       >
         <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-emerald-200/40 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-amber-100/50 blur-2xl" />
-        <div className="relative space-y-5">
+        <div className="relative space-y-3 sm:space-y-5">
           <p className={ui.badge}>Squad habits · daily wins</p>
           <h1 className={ui.headingPage}>Win the day together</h1>
           <p className={`${ui.muted} max-w-prose`}>
